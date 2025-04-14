@@ -1,2 +1,69 @@
 Unsuccessful Run of the Game
 
+{cslinux1:~/Assigment4} ./gserver words.txt &
+[1] 21429
+{cslinux1:~/Assigment4} ./gclient
+
+
+Game Start
+
+You have 12 letter guesses to win
+
+Current try number : 1
+(Guess) Enter a letter in the word : ------------
+e
+
+Current try number : 2
+(Guess) Enter a letter in the word : ---e---e---e
+w
+
+Current try number : 3
+(Guess) Enter a letter in the word : ---e---e---e
+p
+
+Current try number : 4
+(Guess) Enter a letter in the word : ---e--pe---e
+g
+
+Current try number : 5
+(Guess) Enter a letter in the word : ---e--pe---e
+m
+
+Current try number : 6
+(Guess) Enter a letter in the word : ---e--pe---e
+a
+
+Current try number : 7
+(Guess) Enter a letter in the word : ---e--pe---e
+c
+
+Current try number : 8
+(Guess) Enter a letter in the word : ---e--pe---e
+i
+
+Current try number : 9
+(Guess) Enter a letter in the word : ---e--pe-i-e
+n
+
+Current try number : 10
+(Guess) Enter a letter in the word : ---e--pe-i-e
+r
+
+Current try number : 11
+(Guess) Enter a letter in the word : ---er-pe-i-e
+s
+
+Current try number : 12
+(Guess) Enter a letter in the word : s--er-pe-i-e
+u
+
+
+Out of tries : 12 allowed
+The word is: skleropelite
+
+{cslinux1:~/Assigment4} 
+
+
+
+Successful Run of the Game
+
