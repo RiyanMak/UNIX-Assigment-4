@@ -87,6 +87,9 @@ int main(int argc, char* argv[])
         // Choose a random word from the vector
         int randomIndexChoice = rand() % NoOfElements;
         string randomword_str = vectorStrings[randomIndexChoice];
+        
+        // Debug output - print the chosen word
+        cout << "DEBUG: Server chose the word: " << randomword_str << endl;
 
         // Create initial guess word with dashes
         string guessword_str(randomword_str.length(), '-');
@@ -148,21 +151,44 @@ int main(int argc, char* argv[])
                 if (write(swr_crd_np_fd, guessword_str.c_str(), guessword_str.size() + 1) < OK)
                     throw domain_error(LineInfo("write FAILURE", __FILE__, __LINE__));
 
+                // Debug output
+                cout << "DEBUG: Server sent guess word: " << guessword_str << endl;
+
                 // Read guessed letter from client
                 char guessletter_ary[READ_MAX_LEN] = { 0 };
                 if (read(srd_cwr_np_fd, guessletter_ary, READ_MAX_LEN) < OK)
                     throw domain_error(LineInfo("read FAILURE", __FILE__, __LINE__));
 
+                cout << "DEBUG: Server received guess letter: " << guessletter_ary[0] << endl;
+
                 // Update guess word with matches
-                for (int i = 0; i < randomword_str.length(); i++)
-                    if (randomword_str[i] == guessletter_ary[0])
+                bool letterFound = false;
+                for (int i = 0; i < randomword_str.length(); i++) {
+                    if (randomword_str[i] == guessletter_ary[0]) {
                         guessword_str[i] = guessletter_ary[0];
+                        letterFound = true;
+                    }
+                }
+
+                // Debug output
+                cout << "DEBUG: Updated word is now: " << guessword_str << 
+                     " (found letter: " << (letterFound ? "yes" : "no") << ")" << endl;
 
                 // Increment try counter
                 triesCount++;
+                cout << "DEBUG: Try count is now: " << triesCount << endl;
 
                 // Check if the word is guessed or max tries are reached
-                if (guessword_str == randomword_str || triesCount >= NO_OF_LETTER_GUESS_MAX) {
+                if (guessword_str == randomword_str) {
+                    cout << "DEBUG: Word guessed correctly!" << endl;
+                    // Send the final guess word state
+                    if (write(swr_crd_np_fd, guessword_str.c_str(), guessword_str.size() + 1) < OK)
+                        throw domain_error(LineInfo("write FAILURE", __FILE__, __LINE__));
+                    break;
+                }
+                
+                if (triesCount >= NO_OF_LETTER_GUESS_MAX) {
+                    cout << "DEBUG: Maximum tries reached!" << endl;
                     // Send the final guess word state
                     if (write(swr_crd_np_fd, guessword_str.c_str(), guessword_str.size() + 1) < OK)
                         throw domain_error(LineInfo("write FAILURE", __FILE__, __LINE__));
@@ -176,15 +202,21 @@ int main(int argc, char* argv[])
             close(srd_cwr_np_fd);
             unlink(srd_cwr_np_str.c_str());
 
+            cout << "DEBUG: Child process exiting" << endl;
+            
             // Exit child process
             exit(EXIT_SUCCESS);
         }
         
         // Parent process code
         else {
+            cout << "DEBUG: Parent process waiting for child to complete" << endl;
+            
             // Wait for child to complete
             int status;
             waitpid(forkpid, &status, 0);
+            
+            cout << "DEBUG: Child process finished, parent cleaning up" << endl;
             
             // Clean up pipe in parent process
             unlink(swr_crd_np_str.c_str());

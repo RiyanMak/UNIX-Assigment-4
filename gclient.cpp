@@ -121,6 +121,7 @@ int main(int argc, char* argv[])
             cout << endl;
             cout << "Current try number : " << noOfTries + 1 << endl <<
                 "(Guess) Enter a letter in the word : " << guessword_str << endl;
+            cout << "(Enter only one character, additional characters will be ignored)" << endl;
 
             // Get guess from user
             char letterGuess_char = ' ';
