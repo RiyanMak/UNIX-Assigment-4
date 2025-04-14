@@ -88,9 +88,6 @@ int main(int argc, char* argv[])
         int randomIndexChoice = rand() % NoOfElements;
         string randomword_str = vectorStrings[randomIndexChoice];
         
-        // Debug output - print the chosen word
-        cout << "DEBUG: Server chose the word: " << randomword_str << endl;
-
         // Create initial guess word with dashes
         string guessword_str(randomword_str.length(), '-');
 
@@ -146,20 +143,15 @@ int main(int argc, char* argv[])
             int triesCount = 0;
 
             // Game loop
-            do {
+            while (triesCount < NO_OF_LETTER_GUESS_MAX) {
                 // Send current guess word to client
                 if (write(swr_crd_np_fd, guessword_str.c_str(), guessword_str.size() + 1) < OK)
                     throw domain_error(LineInfo("write FAILURE", __FILE__, __LINE__));
-
-                // Debug output
-                cout << "DEBUG: Server sent guess word: " << guessword_str << endl;
 
                 // Read guessed letter from client
                 char guessletter_ary[READ_MAX_LEN] = { 0 };
                 if (read(srd_cwr_np_fd, guessletter_ary, READ_MAX_LEN) < OK)
                     throw domain_error(LineInfo("read FAILURE", __FILE__, __LINE__));
-
-                cout << "DEBUG: Server received guess letter: " << guessletter_ary[0] << endl;
 
                 // Update guess word with matches
                 bool letterFound = false;
@@ -170,39 +162,30 @@ int main(int argc, char* argv[])
                     }
                 }
 
-                // Debug output
-                cout << "DEBUG: Updated word is now: " << guessword_str << 
-                     " (found letter: " << (letterFound ? "yes" : "no") << ")" << endl;
+                // Check if the word is guessed
+                if (guessword_str == randomword_str) {
+                    // Send final state to client
+                    if (write(swr_crd_np_fd, guessword_str.c_str(), guessword_str.size() + 1) < OK)
+                        throw domain_error(LineInfo("write FAILURE", __FILE__, __LINE__));
+                    break;
+                }
 
                 // Increment try counter
                 triesCount++;
-                cout << "DEBUG: Try count is now: " << triesCount << endl;
-
-                // Check if the word is guessed or max tries are reached
-                if (guessword_str == randomword_str) {
-                    cout << "DEBUG: Word guessed correctly!" << endl;
-                    // Send the final guess word state
-                    if (write(swr_crd_np_fd, guessword_str.c_str(), guessword_str.size() + 1) < OK)
-                        throw domain_error(LineInfo("write FAILURE", __FILE__, __LINE__));
-                    break;
-                }
                 
+                // Check if max tries reached
                 if (triesCount >= NO_OF_LETTER_GUESS_MAX) {
-                    cout << "DEBUG: Maximum tries reached!" << endl;
-                    // Send the final guess word state
+                    // Send final state to client
                     if (write(swr_crd_np_fd, guessword_str.c_str(), guessword_str.size() + 1) < OK)
                         throw domain_error(LineInfo("write FAILURE", __FILE__, __LINE__));
                     break;
                 }
-
-            } while (true);
+            }
 
             // Clean up pipes in child process
             close(swr_crd_np_fd);
             close(srd_cwr_np_fd);
             unlink(srd_cwr_np_str.c_str());
-
-            cout << "DEBUG: Child process exiting" << endl;
             
             // Exit child process
             exit(EXIT_SUCCESS);
@@ -210,13 +193,9 @@ int main(int argc, char* argv[])
         
         // Parent process code
         else {
-            cout << "DEBUG: Parent process waiting for child to complete" << endl;
-            
             // Wait for child to complete
             int status;
             waitpid(forkpid, &status, 0);
-            
-            cout << "DEBUG: Child process finished, parent cleaning up" << endl;
             
             // Clean up pipe in parent process
             unlink(swr_crd_np_str.c_str());

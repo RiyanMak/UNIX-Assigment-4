@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
             "You have " << NO_OF_LETTER_GUESS_MAX << " letter guesses to win" << endl;
         
         // Game loop
-        do {
+        while (noOfTries < NO_OF_LETTER_GUESS_MAX) {
             // Read guess word from server
             char guessWordAry[READ_MAX_LEN] = { 0 };
             if (read(swr_crd_np_fd, guessWordAry, READ_MAX_LEN) < OK)
@@ -110,24 +110,20 @@ int main(int argc, char* argv[])
                 break;
             }
 
-            // Check if maximum tries are exceeded
-            if (noOfTries >= NO_OF_LETTER_GUESS_MAX) {
-                cout << endl << endl << "Out of tries : " << NO_OF_LETTER_GUESS_MAX << " allowed" << endl <<
-                    "The word is: " << randomWordAry_str << endl << endl;
-                break;
-            }
-
             // Display game status and prompt for guess
             cout << endl;
             cout << "Current try number : " << noOfTries + 1 << endl <<
                 "(Guess) Enter a letter in the word : " << guessword_str << endl;
-            cout << "(Enter only one character, additional characters will be ignored)" << endl;
 
-            // Get guess from user
-            char letterGuess_char = ' ';
+            // Get guess from user (just take the first character)
+            char letterGuess_char;
             cin >> letterGuess_char;
-            string letterGuess_str = " ";
-            letterGuess_str[0] = letterGuess_char;
+            
+            // Clear input buffer to handle multi-character input
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            
+            // Create string with just the first character
+            string letterGuess_str(1, letterGuess_char);
             
             // Send guess to server
             if (write(srd_cwr_np_fd, letterGuess_str.c_str(), letterGuess_str.size() + 1) < OK)
@@ -135,8 +131,13 @@ int main(int argc, char* argv[])
 
             // Increment try counter
             noOfTries++;
+        }
 
-        } while (true);
+        // Check if maximum tries exceeded
+        if (noOfTries >= NO_OF_LETTER_GUESS_MAX) {
+            cout << endl << endl << "Out of tries : " << NO_OF_LETTER_GUESS_MAX << " allowed" << endl <<
+                "The word is: " << randomWordAry_str << endl << endl;
+        }
 
         // Close all pipes
         close(srd_cwr_req_np_fd);
