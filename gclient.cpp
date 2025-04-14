@@ -120,7 +120,8 @@ int main(int argc, char* argv[])
             cin >> letterGuess_char;
             
             // Clear input buffer to handle multi-character input
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            char dummy;
+            while(cin.get(dummy) && dummy != '\n');
             
             // Create string with just the first character
             string letterGuess_str(1, letterGuess_char);
