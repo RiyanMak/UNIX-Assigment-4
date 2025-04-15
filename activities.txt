@@ -67,3 +67,62 @@ The word is: skleropelite
 
 Successful Run of the Game
 
+{cslinux1:~/Assigment4} ./gserver words.txt &
+[1] 40392
+{cslinux1:~/Assigment4} ./gclient
+
+
+Game Start
+
+You have 12 letter guesses to win
+
+Current try number : 1
+(Guess) Enter a letter in the word : ----------
+e
+
+Current try number : 2
+(Guess) Enter a letter in the word : ----------
+a
+
+Current try number : 3
+(Guess) Enter a letter in the word : -a-a-a--a-
+r
+
+Current try number : 4
+(Guess) Enter a letter in the word : -a-a-a--a-
+i
+
+Current try number : 5
+(Guess) Enter a letter in the word : -a-a-a--a-
+o
+
+Current try number : 6
+(Guess) Enter a letter in the word : -a-a-a--a-
+t
+
+Current try number : 7
+(Guess) Enter a letter in the word : ta-a-a--a-
+n
+
+Current try number : 8
+(Guess) Enter a letter in the word : ta-a-an-an
+s
+
+Current try number : 9
+(Guess) Enter a letter in the word : ta-a-an-an
+m
+
+Current try number : 10
+(Guess) Enter a letter in the word : ta-aman-an
+l
+
+Current try number : 11
+(Guess) Enter a letter in the word : talaman-an
+c
+
+talamancan
+
+
+You Win!
+
+{cslinux1:~/Assigment4} 
